@@ -146,3 +146,42 @@ docker exec ewomail amavisd testkeys
 TESTING#1: dkim._domainkey.ewomail.com       => pass
 ```
 显示pass则正确。
+
+
+amavis: Can't connect to TCP port 10024 on ::1 [Cannot assign requested address] #27
+ Open	danbo opened this issue on 21 Jun 2017 · 0 comments
+Comments
+Assignees
+No one assigned
+Labels
+None yet
+Projects
+None yet
+Milestone
+No milestone
+Notifications
+You’re not receiving notifications from this thread.
+1 participant
+@danbo
+@danbo
+ 
+danbo commented on 21 Jun 2017
+Started seeing this in the logs.. I think it was after I upgraded docker..
+
+I fixed this by adding
+
+$inet_socket_bind = '127.0.0.1';
+
+to the end of /etc/amavisd/amavisd.conf in the image.
+
+Of course the fastest way to do this was to extract it out of the image:
+
+docker exec -it <image_name> cat /etc/amavisd/amavisd.conf > amavisd.conf
+
+and update the run command to map the locally updated one to the image:
+
+-v $(pwd)/amavisd.conf:/etc/amavisd/amavisd.conf:rw\
+
+Hope this helps someone
+
+Source: https://groups.google.com/forum/#!topic/mailing.unix.amavis-user/WAsTKPO-i-0
